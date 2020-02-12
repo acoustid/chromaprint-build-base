@@ -24,12 +24,11 @@ jobs:
           else
             echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d'/' -f3)
           fi
-  
-      - name: Build image
-        run: |
-          docker build -t ${{ steps.info.outputs.IMAGE }}:${{ steps.info.outputs.VERSION }} .
-  
-      - name: Push image
-        run: |
-          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
-          docker push ${{ steps.info.outputs.IMAGE }}:${{ steps.info.outputs.VERSION }}
+
+      - uses: whoan/docker-build-with-cache-action@v3
+        with:
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+          image_name: ${{ steps.info.outputs.IMAGE }}
+          image_tag: ${{ steps.info.outputs.VERSION }}
+          registry: quay.io
