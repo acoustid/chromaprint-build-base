@@ -17,7 +17,8 @@ jobs:
       - name: Check version details
         id: info
         run: |
-          echo ::set-output name=IMAGE::quay.io/acoustid/chromaprint-build-base
+          echo ::set-output name=REGISTRY::quay.io
+          echo ::set-output name=IMAGE::acoustid/chromaprint-build-base
           if [[ $GITHUB_REF == refs/tags/v* ]]
           then
             echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d'/' -f3 | sed 's/^v//')
@@ -29,6 +30,6 @@ jobs:
         with:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
+          registry: ${{ steps.info.outputs.REGISTRY }}
           image_name: ${{ steps.info.outputs.IMAGE }}
           image_tag: ${{ steps.info.outputs.VERSION }}
-          registry: quay.io
