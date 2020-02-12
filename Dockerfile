@@ -2,7 +2,7 @@ FROM quay.io/pypa/manylinux2010_x86_64
 
 RUN yum update -y && \
     yum install -y mingw64-gcc && \
-    yum install -y gcc-arm-linux-gnu && \
+    yum install -y gcc-arm-linux-gn	gcc-c++-arm-linux-gnu && \
     yum install -y glibc-devel glibc-devel.i686 libstdc++-devel libstdc++-devel.i686 && \
     yum clean all
 
