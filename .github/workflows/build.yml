@@ -8,10 +8,11 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    matrix:
-      base:
-        - manylinux
-        - ubuntu
+    strategy:
+      matrix:
+        base:
+          - manylinux
+          - ubuntu
 
     steps:
     
