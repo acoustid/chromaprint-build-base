@@ -40,7 +40,7 @@ jobs:
         run: |
           echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
           docker push ${{ steps.info.outputs.IMAGE }}:${{ steps.info.outputs.VERSION }}-${{ matrix.base }}
-          if [ $VERSION = master ]
+          if [ "${{ steps.info.outputs.VERSION }}" = master ]
           then
               docker tag ${{ steps.info.outputs.IMAGE }}:${{ steps.info.outputs.VERSION }}-${{ matrix.base }} ${{ steps.info.outputs.IMAGE }}:${{ matrix.base }}
               docker push ${{ steps.info.outputs.IMAGE }}:${{ matrix.base }}
