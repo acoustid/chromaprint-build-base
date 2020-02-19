@@ -6,8 +6,12 @@ on:
 
 jobs:
 
-  build-base:
+  build:
     runs-on: ubuntu-latest
+    matrix:
+      base:
+        - manylinux
+        - ubuntu
 
     steps:
     
@@ -17,8 +21,7 @@ jobs:
       - name: Check version details
         id: info
         run: |
-          echo ::set-output name=REGISTRY::quay.io
-          echo ::set-output name=IMAGE::acoustid/chromaprint-build-base
+          echo ::set-output name=IMAGE::quay.io/acoustid/chromaprint-build-base
           if [[ $GITHUB_REF == refs/tags/v* ]]
           then
             echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d'/' -f3 | sed 's/^v//')
@@ -26,10 +29,12 @@ jobs:
             echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d'/' -f3)
           fi
 
-      - uses: whoan/docker-build-with-cache-action@v3
-        with:
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_PASSWORD }}
-          registry: ${{ steps.info.outputs.REGISTRY }}
-          image_name: ${{ steps.info.outputs.IMAGE }}
-          image_tag: ${{ steps.info.outputs.VERSION }}
+      - name: Build image
+        run: |
+          cd ${{ matrix.base }}
+          docker build -t ${{ steps.info.outputs.IMAGE }}:${{ steps.info.outputs.VERSION }}-${{ matrix.base }} .
+
+      - name: Push image
+        run: |
+          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
+          docker push ${{ steps.info.outputs.IMAGE }}:${{ steps.info.outputs.VERSION }}-${{ matrix.base }}
